@@ -1,0 +1,78 @@
+.login-card {
+  width: 100%; max-width: 920px; min-height: 600px;
+  background: var(--surface);
+  border-radius: 24px;
+  box-shadow: var(--shadow-modal);
+  display: grid; grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+.brand-panel {
+  position: relative;
+  background: linear-gradient(155deg, var(--navy-deep) 0%, var(--navy) 55%, var(--blue) 130%);
+  padding: 44px 40px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  color: #fff;
+  overflow: hidden;
+}
+.brand-panel::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(115deg, transparent 45%, rgba(255,255,255,0.05) 46%, transparent 47%),
+    linear-gradient(115deg, transparent 60%, rgba(255,255,255,0.04) 61%, transparent 62%);
+}
+.bp-top { position: relative; display: flex; align-items: center; gap: 10px; }
+.bp-top .brand-mark { background: rgba(255,255,255,0.14); }
+.bp-top .name { font-weight: 600; font-size: 15px; }
+
+.bp-mid { position: relative; }
+.bp-mid h2 { font-size: 27px; font-weight: 600; line-height: 1.28; letter-spacing: -0.01em; margin: 0 0 14px; max-width: 280px; }
+.bp-mid p { font-size: 13.5px; color: rgba(255,255,255,0.68); line-height: 1.6; max-width: 270px; margin: 0; }
+
+.bp-bottom { position: relative; display: flex; flex-direction: column; gap: 12px; }
+.bp-stat { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: rgba(255,255,255,0.75); }
+.bp-stat i { font-size: 15px; color: var(--ice); }
+.bp-foot { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 10px; }
+
+.form-panel { padding: 52px 56px; display: flex; flex-direction: column; }
+.logo-slot { width: 54px; height: 54px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; color: var(--text-muted); font-size: 22px; }
+.institution { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 26px; }
+.institution i { font-size: 14px; color: var(--text-muted); }
+
+.form-head { text-align: center; margin-bottom: 28px; }
+.form-head h1 { font-size: 20px; font-weight: 600; margin: 0 0 5px; letter-spacing: -0.01em; }
+.form-head p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+.input-wrap { position: relative; }
+.input-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-muted); }
+.input-wrap input { width: 100%; padding: 11px 14px 11px 38px; border: 1px solid var(--border); border-radius: 11px; font-size: 13.5px; color: var(--text-primary); background: var(--bg); outline: none; }
+.input-wrap input:focus { border-color: var(--blue-light); background: var(--surface); }
+.input-wrap .toggle-eye { left: auto; right: 13px; cursor: pointer; }
+
+.field-row { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 22px; }
+.remember { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-secondary); }
+.remember input { accent-color: var(--navy); width: 14px; height: 14px; }
+.forgot { font-size: 12.5px; color: var(--blue); text-decoration: none; font-weight: 500; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 11px; color: var(--text-muted); }
+
+.signup-box { background: var(--blue-pale); border-radius: 14px; padding: 16px 18px; font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+.signup-box b { color: var(--navy); font-weight: 600; }
+.signup-box .step { display: flex; gap: 8px; margin-bottom: 6px; }
+.signup-box .step:last-child { margin-bottom: 0; }
+.signup-box .num { width: 16px; height: 16px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 9.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+[data-theme="dark"] .signup-box .num { color: var(--navy-deep); }
+
+.form-foot { margin-top: auto; padding-top: 24px; text-align: center; font-size: 12.5px; color: var(--text-secondary); }
+
+.status-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--green-bg); color: var(--green); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
+.status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+@media (max-width: 760px) {
+  .login-card { grid-template-columns: 1fr; }
+  .brand-panel { display: none; }
+  .form-panel { padding: 40px 28px; }
+}
