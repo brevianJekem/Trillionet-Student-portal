@@ -26,7 +26,7 @@ export default function TopNav({ onToggleSidebar }) {
           <i className="ti ti-menu-2"></i>
         </button>
         <div className="topnav-brand">
-          <img src="/logo.png" alt="Trillionet" style={{ width: 32, height: 32, borderRadius: 9, objectFit: "cover" }} />
+          <img src="/logo.png" alt="Trillionet" style={{ height: 34, width: "auto", objectFit: "contain" }} />
           <span>Trillionet Computer Training Center</span>
         </div>
       </div>

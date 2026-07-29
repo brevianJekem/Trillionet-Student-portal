@@ -9,7 +9,9 @@
 
 .brand-panel {
   position: relative;
-  background: linear-gradient(155deg, var(--navy-deep) 0%, var(--navy) 55%, var(--blue) 130%);
+  background:
+    linear-gradient(155deg, rgba(2,16,36,0.88) 0%, rgba(5,38,89,0.82) 55%, rgba(84,131,179,0.75) 130%),
+    url('/students.jpg') center/cover no-repeat;
   padding: 44px 40px;
   display: flex; flex-direction: column; justify-content: space-between;
   color: #fff;
