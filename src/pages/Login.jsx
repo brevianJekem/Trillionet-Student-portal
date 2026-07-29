@@ -26,8 +26,11 @@ export default function Login() {
       <div className="login-card">
         <div className="brand-panel">
           <div className="bp-top">
-            <img src="/logo.png" alt="Trillionet" style={{ width: 34, height: 34, borderRadius: 10, objectFit: 'cover' }} />
-            <div className="name heading">Trillionet</div>
+            <img
+              src="/logo.png"
+              alt="Trillionet"
+              style={{ height: 44, width: 'auto', objectFit: 'contain' }}
+            />
           </div>
 
           <div className="bp-mid">
@@ -43,7 +46,13 @@ export default function Login() {
         </div>
 
         <form className="form-panel" onSubmit={handleSignIn}>
-          <img src="/logo.png" alt="Trillionet Computer Training Center" style={{ width: 54, height: 54, borderRadius: 14, objectFit: "cover" }} />
+          <div style={{ height: 60, marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img
+              src="/logo.png"
+              alt="Trillionet Computer Training Center"
+              style={{ height: '100%', width: 'auto', objectFit: 'contain' }}
+            />
+          </div>
           <div className="institution"><i className="ti ti-building"></i>Trillionet Computer Training Center</div>
 
           <div className="form-head">
