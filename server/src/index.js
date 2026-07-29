@@ -7,7 +7,6 @@ import { requireAuth } from './middleware/auth.js';
 import { pruneExpiredRefreshTokens } from './db/queries.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }));
 app.use(express.json());
@@ -17,19 +16,23 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 app.use('/api/auth', authRoutes);
 
-// Example of a protected route — any page-data route would use requireAuth the same way
 app.get('/api/protected-example', requireAuth, (req, res) => {
   res.json({ message: `Hello ${req.user.name}, this route required a valid access token.` });
 });
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`Trillionet auth server running on http://localhost:${PORT}`);
-});
+const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
 
-// Keep the refresh_tokens table from growing forever — harmless if it fails,
-// expired tokens are already rejected by isRefreshTokenValid regardless.
-setInterval(() => {
-  pruneExpiredRefreshTokens().catch(err => console.error('Token cleanup failed:', err));
-}, 24 * 60 * 60 * 1000); // once a day
+if (isDirectRun) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Trillionet auth server running on http://localhost:${PORT}`);
+  });
+
+  setInterval(() => {
+    pruneExpiredRefreshTokens().catch(err => console.error('Token cleanup failed:', err));
+  }, 24 * 60 * 60 * 1000);
+}
+
+export default app;
