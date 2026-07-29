@@ -10,7 +10,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Already signed in — no reason to show the login screen
   if (!loading && user) return <Navigate to="/" replace />;
 
   const handleSignIn = async (e) => {
@@ -25,17 +24,9 @@ export default function Login() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       <div className="login-card">
         <div className="brand-panel">
-          <div className="bp-top">
-            <img
-              src="/logo.png"
-              alt="Trillionet"
-              style={{ height: 44, width: 'auto', objectFit: 'contain' }}
-            />
-          </div>
-
           <div className="bp-mid">
             <h2 className="heading">Everything about your training, in one place</h2>
-            <p>Packages, class schedules, assignments, fees and messages — everything about your training, organised in one place.</p>
+            <p>Packages, class schedules, assignments, fees, and messages with your instructors — all in one portal.</p>
           </div>
 
           <div className="bp-bottom">
@@ -105,11 +96,11 @@ export default function Login() {
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>
 
-          <div className="divider"><span>New to Trillionet</span></div>
+          <div className="divider"><span>New here?</span></div>
 
           <div className="signup-box">
-            <div className="step"><span className="num">1</span><span>Ask the <b>admissions office</b> to create your student account.</span></div>
-            <div className="step"><span className="num">2</span><span>You'll get a <b>set password</b> email — check spam if it's not in your inbox.</span></div>
+            <div className="step"><span className="num">1</span><span>Ask the <b>admissions office</b> to create your account.</span></div>
+            <div className="step"><span className="num">2</span><span>Check your email for a <b>set password</b> link (spam folder too).</span></div>
             <div className="step"><span className="num">3</span><span>Set your password, then sign in above.</span></div>
           </div>
 
