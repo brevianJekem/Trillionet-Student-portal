@@ -200,3 +200,30 @@ table.data-table td.muted { color: var(--text-secondary); }
 .quick-btn { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
 .quick-btn i { font-size: 15px; color: var(--blue); }
 .quick-btn:hover { border-color: var(--blue-light); }
+
+/* ---------- Mobile: sidebar becomes a slide-out drawer ---------- */
+@media (max-width: 768px) {
+  .topnav-brand span { display: none; }
+  .sidebar-dark {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    z-index: 50;
+    width: 240px;
+    transform: translateX(-100%);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .sidebar-dark:not(.collapsed) { transform: translateX(0); }
+  .sidebar-dark.collapsed { width: 240px; padding: 16px 12px; }
+  main.content { padding: 20px 16px 48px; width: 100%; }
+  .hero-row { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 64px 0 0 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 40;
+  }
+}
+.mobile-backdrop { display: none; }
