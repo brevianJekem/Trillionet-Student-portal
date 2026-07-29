@@ -25,7 +25,10 @@ export default function Login() {
       <div className="login-card">
         <div className="brand-panel">
           <div className="bp-mid">
-            <h2 className="heading">Everything about your training, in one place</h2>
+            <span className="bp-eyebrow">Student Portal</span>
+            <h2 className="heading">
+              Everything about your <span className="bp-accent">training</span>, in one place
+            </h2>
             <p>Packages, class schedules, assignments, fees, and messages with your instructors — all in one portal.</p>
           </div>
 
@@ -37,7 +40,7 @@ export default function Login() {
         </div>
 
         <form className="form-panel" onSubmit={handleSignIn}>
-          <div style={{ height: 60, marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ height: 76, marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img
               src="/logo.png"
               alt="Trillionet Computer Training Center"
@@ -92,8 +95,10 @@ export default function Login() {
             <a href="#" className="forgot">Forgot password?</a>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={submitting} style={{ width: '100%', border: 'none' }}>
-            {submitting ? 'Signing in…' : 'Sign in'}
+          <button type="submit" className="btn-signin" disabled={submitting}>
+            {submitting ? 'Signing in…' : (
+              <>Sign in <i className="ti ti-arrow-right"></i></>
+            )}
           </button>
 
           <div className="divider"><span>New here?</span></div>
@@ -105,7 +110,7 @@ export default function Login() {
           </div>
 
           <div className="form-foot">
-            <span className="status-pill"><span className="dot"></span>All systems operational</span>
+            Trouble signing in? <a href="mailto:admissions@trillionet.ac.ke">Contact the front office</a>
           </div>
         </form>
       </div>
