@@ -20,20 +20,25 @@ export function AuthProvider({ children }) {
 
   const login = async (regNo, password) => {
     setError(null);
-    const res = await apiFetch('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ regNo, password }),
-    }, false);
+    try {
+      const res = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ regNo, password }),
+      }, false);
 
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error || 'Sign in failed');
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Sign in failed');
+        return false;
+      }
+
+      setAccessToken(data.accessToken);
+      setUser(data.user);
+      return true;
+    } catch (err) {
+      setError('Could not reach the server. Check your connection and try again.');
       return false;
     }
-
-    setAccessToken(data.accessToken);
-    setUser(data.user);
-    return true;
   };
 
   const logout = async () => {
