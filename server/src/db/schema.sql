@@ -23,3 +23,25 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
+CREATE TABLE IF NOT EXISTS packages (
+  id             TEXT PRIMARY KEY,
+  name           TEXT NOT NULL,
+  category       TEXT NOT NULL,
+  instructor     TEXT NOT NULL,
+  total_lessons  INTEGER NOT NULL,
+  color          TEXT NOT NULL DEFAULT 'var(--blue)',
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS enrollments (
+  id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id            UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  package_id         TEXT NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
+  completed_lessons  INTEGER NOT NULL DEFAULT 0,
+  next_class         TEXT,
+  enrolled_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, package_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_enrollments_user_id ON enrollments(user_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_package_id ON enrollments(package_id);

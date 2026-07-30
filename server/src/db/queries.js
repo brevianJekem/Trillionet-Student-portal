@@ -52,3 +52,6 @@ export async function revokeAllRefreshTokensForUser(userId) {
 export async function pruneExpiredRefreshTokens() {
   await pool.query('DELETE FROM refresh_tokens WHERE expires_at <= now()');
 }
+export async function updateUserPassword(userId, passwordHash) {
+  await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, userId]);
+}

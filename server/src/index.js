@@ -3,8 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
+import packagesRoutes from './routes/packages.js';
 import { requireAuth } from './middleware/auth.js';
 import { pruneExpiredRefreshTokens } from './db/queries.js';
+
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.use(cookieParser());
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/packages', packagesRoutes);
 
 app.get('/api/protected-example', requireAuth, (req, res) => {
   res.json({ message: `Hello ${req.user.name}, this route required a valid access token.` });
