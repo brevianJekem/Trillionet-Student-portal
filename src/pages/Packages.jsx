@@ -1,20 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import { packages, enrolledPackageIds, materials } from '../data/mock';
+import { fetchPackages, enrollInPackage, dropPackage } from '../api/packages';
+import { materials } from '../data/mock'; // course materials aren't wired to the database yet
 
 const typeIcon = { pdf: 'ti-file-type-pdf', video: 'ti-player-play' };
 
 export default function Packages() {
   const [tab, setTab] = useState('enrolled');
-  const [enrolled, setEnrolled] = useState(enrolledPackageIds);
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pendingId, setPendingId] = useState(null);
   const [expanded, setExpanded] = useState(null);
 
-  const toggleEnroll = (id) => {
-    setEnrolled(e => e.includes(id) ? e.filter(x => x !== id) : [...e, id]);
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setPackages(await fetchPackages());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const enrolledPackages = packages.filter(p => enrolled.includes(p.id));
-  const availablePackages = packages.filter(p => !enrolled.includes(p.id));
+  useEffect(() => { load(); }, []);
+
+  const handleEnroll = async (id) => {
+    setPendingId(id);
+    try {
+      await enrollInPackage(id);
+      await load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  const handleDrop = async (id) => {
+    setPendingId(id);
+    try {
+      await dropPackage(id);
+      await load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  const enrolledPackages = packages.filter(p => p.enrolled);
+  const availablePackages = packages.filter(p => !p.enrolled);
 
   return (
     <Layout title="My packages">
@@ -27,7 +65,15 @@ export default function Packages() {
         </button>
       </div>
 
-      {tab === 'enrolled' && (
+      {error && (
+        <div style={{ background: 'var(--red-bg)', color: 'var(--red)', fontSize: 13, padding: '10px 14px', borderRadius: 10, marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="panel"><div className="empty-state"><div className="m">Loading your packages…</div></div></div>
+      ) : tab === 'enrolled' ? (
         enrolledPackages.length === 0 ? (
           <div className="panel"><div className="empty-state">
             <i className="ti ti-apps-off"></i>
@@ -50,6 +96,13 @@ export default function Packages() {
                       {p.nextClass && <span className="tag blue"><i className="ti ti-clock" style={{ fontSize: 11 }}></i>{p.nextClass}</span>}
                       <button className="link-action" onClick={() => setExpanded(isOpen ? null : p.id)}>
                         {isOpen ? 'Hide materials' : 'View materials'}
+                      </button>
+                      <button
+                        className="btn btn-danger-outline btn-sm"
+                        disabled={pendingId === p.id}
+                        onClick={() => handleDrop(p.id)}
+                      >
+                        {pendingId === p.id ? '…' : 'Drop'}
                       </button>
                     </div>
                   </div>
@@ -83,9 +136,7 @@ export default function Packages() {
             })}
           </div>
         )
-      )}
-
-      {tab === 'browse' && (
+      ) : (
         <div className="panel">
           <div className="panel-head">
             <div>
@@ -103,7 +154,13 @@ export default function Packages() {
                     <td className="muted">{p.category}</td>
                     <td className="muted">{p.instructor}</td>
                     <td style={{ textAlign: 'right' }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => toggleEnroll(p.id)}>Register</button>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        disabled={pendingId === p.id}
+                        onClick={() => handleEnroll(p.id)}
+                      >
+                        {pendingId === p.id ? 'Registering…' : 'Register'}
+                      </button>
                     </td>
                   </tr>
                 ))}

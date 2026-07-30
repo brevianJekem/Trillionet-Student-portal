@@ -227,3 +227,38 @@ table.data-table td.muted { color: var(--text-secondary); }
   }
 }
 .mobile-backdrop { display: none; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  .topnav-brand span { display: none; }
+  .sidebar-dark {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    z-index: 50;
+    width: 240px;
+    transform: translateX(-100%);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease;
+  }
+  .sidebar-dark:not(.collapsed) { transform: translateX(0); }
+  .sidebar-dark.collapsed { width: 240px; padding: 16px 12px; }
+  .mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 64px 0 0 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 40;
+  }
+  main.content { padding: 16px 14px 40px; width: 100%; max-width: 100%; }
+  .page-title-row h1 { font-size: 19px; }
+  .hero-row { grid-template-columns: 1fr; gap: 12px; }
+  .hero-panel { flex-direction: column; align-items: flex-start; gap: 20px; padding: 22px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  section[style*="grid-template-columns: 1.35fr 1fr"] { grid-template-columns: 1fr !important; }
+  div[style*="grid-template-columns: 240px 1fr"] { grid-template-columns: 1fr !important; }
+  .field select, .field input, .input-wrap input, textarea { font-size: 16px; }
+  .btn, .quick-btn, .icon-btn { min-height: 40px; }
+  .icon-btn { width: 40px; height: 40px; }
+  table.data-table { min-width: 480px; }
+}

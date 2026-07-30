@@ -1,12 +1,31 @@
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Rings from '../components/Rings';
 import { useAuth } from '../context/AuthContext';
-import { student, packages, enrolledPackageIds, announcements } from '../data/mock';
+import { fetchPackages } from '../api/packages';
+import { student, announcements } from '../data/mock';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const firstName = (user?.name || student.name).split(' ')[0];
-  const enrolled = packages.filter(p => enrolledPackageIds.includes(p.id));
+
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPackages(await fetchPackages());
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const enrolled = packages.filter(p => p.enrolled);
   const overallProgress = enrolled.length
     ? Math.round(enrolled.reduce((s, p) => s + p.completedLessons / p.totalLessons, 0) / enrolled.length * 100)
     : 0;
@@ -14,15 +33,22 @@ export default function Dashboard() {
 
   return (
     <Layout title="Dashboard">
+      {error && (
+        <div style={{ background: 'var(--red-bg)', color: 'var(--red)', fontSize: 13, padding: '10px 14px', borderRadius: 10, marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
+
       <div className="hero-row">
-        {/* Left column: welcome hero + enrolled packages */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
           <section className="hero-panel">
             <div>
               <h2 className="heading">Welcome back, {firstName}</h2>
               <p>
-                You're enrolled in {enrolled.length} package{enrolled.length !== 1 ? 's' : ''} and have
-                {' '}{upcoming.length} class{upcoming.length !== 1 ? 'es' : ''} coming up.
+                {loading ? 'Loading your packages…' : (
+                  <>You're enrolled in {enrolled.length} package{enrolled.length !== 1 ? 's' : ''} and have
+                  {' '}{upcoming.length} class{upcoming.length !== 1 ? 'es' : ''} coming up.</>
+                )}
               </p>
             </div>
             <Rings
@@ -39,7 +65,9 @@ export default function Dashboard() {
               <a href="#/packages" className="link-action">View all</a>
             </div>
 
-            {enrolled.length === 0 ? (
+            {loading ? (
+              <div className="empty-state"><div className="m">Loading…</div></div>
+            ) : enrolled.length === 0 ? (
               <div className="empty-state">
                 <i className="ti ti-apps-off"></i>
                 <div className="t">No packages registered</div>
@@ -67,7 +95,6 @@ export default function Dashboard() {
           </section>
         </div>
 
-        {/* Right column: fee balance, attendance, support */}
         <div className="side-cards">
           <div className="info-card tone-blue">
             <div className="ic-icon"><i className="ti ti-coin"></i></div>
@@ -101,7 +128,9 @@ export default function Dashboard() {
             <h3>Upcoming classes</h3>
             <a href="#/schedule" className="link-action">Full schedule</a>
           </div>
-          {upcoming.length === 0 ? (
+          {loading ? (
+            <div className="empty-state" style={{ padding: '20px 0' }}><div className="m">Loading…</div></div>
+          ) : upcoming.length === 0 ? (
             <div className="empty-state" style={{ padding: '20px 0' }}>
               <div className="m">No upcoming classes scheduled.</div>
             </div>
