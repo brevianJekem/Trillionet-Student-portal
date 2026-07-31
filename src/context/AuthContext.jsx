@@ -5,11 +5,9 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // true while we try to restore a session
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // On first load, try to silently refresh — if the httpOnly cookie is
-  // still valid this logs the user back in without them re-entering anything.
   useEffect(() => {
     (async () => {
       const result = await refreshAccessToken();
@@ -36,6 +34,7 @@ export function AuthProvider({ children }) {
       setUser(data.user);
       return true;
     } catch (err) {
+      console.error('Login request failed:', err);
       setError('Could not reach the server. Check your connection and try again.');
       return false;
     }
@@ -47,8 +46,12 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (patch) => {
+    setUser(u => (u ? { ...u, ...patch } : u));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

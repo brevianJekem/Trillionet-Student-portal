@@ -27,7 +27,7 @@ function refreshCookieOptions() {
 }
 
 function publicUser(user) {
-  return { id: user.id, regNo: user.reg_no, email: user.email, name: user.name, role: user.role };
+  return { id: user.id, regNo: user.reg_no, email: user.email, name: user.name, role: user.role, phone: user.phone || '' };
 }
 
 // POST /api/auth/login  { regNo, password }

@@ -45,3 +45,5 @@ CREATE TABLE IF NOT EXISTS enrollments (
 
 CREATE INDEX IF NOT EXISTS idx_enrollments_user_id ON enrollments(user_id);
 CREATE INDEX IF NOT EXISTS idx_enrollments_package_id ON enrollments(package_id);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
