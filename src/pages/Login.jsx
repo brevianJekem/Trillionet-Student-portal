@@ -64,24 +64,22 @@ export default function Login() {
             </div>
           )}
 
-          <div className="field">
+<div className="field">
             <label>Registration number or email</label>
-            <div className="input-wrap">
-              <i className="ti ti-user"></i>
-              <input
-                type="text" name="username" autoComplete="username" placeholder="TCT/2024/0142"
-                value={regNo} onChange={e => setRegNo(e.target.value)} required
-              />
-            </div>
+            <input
+              type="text" name="username" autoComplete="username" placeholder="TCT/2024/0142"
+              value={regNo} onChange={e => setRegNo(e.target.value)} required
+              style={{ width: '100%', padding: '11px 14px', border: '1px solid var(--border)', borderRadius: 11, fontSize: 13.5, color: 'var(--text-primary)', background: 'var(--bg)', outline: 'none' }}
+            />
           </div>
 
           <div className="field">
             <label>Password</label>
             <div className="input-wrap">
-              <i className="ti ti-lock"></i>
               <input
                 type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" placeholder="••••••••"
                 value={password} onChange={e => setPassword(e.target.value)} required
+                style={{ paddingLeft: 14 }}
               />
               <i
                 className={`ti ${showPassword ? 'ti-eye-off' : 'ti-eye'} toggle-eye`}
@@ -89,6 +87,8 @@ export default function Login() {
               ></i>
             </div>
           </div>
+
+
 
           <div className="field-row">
             <label className="remember"><input type="checkbox" />Remember me</label>
