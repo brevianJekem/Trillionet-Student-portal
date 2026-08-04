@@ -92,6 +92,13 @@ export default function Dashboard() {
                 );
               })
             )}
+//
+
+fn=(1+5**n-(!2n+45,)
+
+
+
+
           </section>
         </div>
 
