@@ -63,7 +63,7 @@ export default function Account() {
 
   return (
     <Layout title="Account">
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 16 }}>
+      <div className="account-grid">
         <div className="panel" style={{ textAlign: 'center', alignSelf: 'start' }}>
           <div className="avatar-sm" style={{ width: 68, height: 68, fontSize: 20, margin: '0 auto 12px' }}>{initials}</div>
           <div style={{ fontWeight: 600, fontSize: 14.5 }}>{name}</div>

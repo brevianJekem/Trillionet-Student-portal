@@ -69,7 +69,7 @@ export default function Login() {
             <div className="input-wrap">
               <i className="ti ti-user"></i>
               <input
-                type="text" placeholder="TCT/2024/0142"
+                type="text" name="username" autoComplete="username" placeholder="TCT/2024/0142"
                 value={regNo} onChange={e => setRegNo(e.target.value)} required
               />
             </div>
@@ -80,7 +80,7 @@ export default function Login() {
             <div className="input-wrap">
               <i className="ti ti-lock"></i>
               <input
-                type={showPassword ? 'text' : 'password'} placeholder="••••••••"
+                type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" placeholder="••••••••"
                 value={password} onChange={e => setPassword(e.target.value)} required
               />
               <i

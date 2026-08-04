@@ -1,3 +1,7 @@
+cd "$(dirname "$0")"
+
+# 1. Notification bell — now actually clickable, honest content instead of a fake "3" badge
+cat > src/components/TopNav.jsx << 'JSXEOF'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
@@ -77,3 +81,76 @@ export default function TopNav({ onToggleSidebar }) {
     </header>
   );
 }
+JSXEOF
+echo "1/4 TopNav.jsx — notifications fixed"
+
+# 2. Account page mobile layout — swap fragile inline style for a real class
+python3 -c "
+path = 'src/pages/Account.jsx'
+with open(path) as f:
+    content = f.read()
+content = content.replace(
+    \"      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 16 }}>\",
+    '      <div className=\"account-grid\">'
+)
+with open(path, 'w') as f:
+    f.write(content)
+print('2/4 Account.jsx — mobile class swap done')
+"
+
+# 3. app.css — add account-grid base style, fix mobile rule to use the class
+python3 -c "
+path = 'src/styles/app.css'
+with open(path) as f:
+    content = f.read()
+
+content = content.replace(
+    '.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }',
+    '.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }\n.account-grid { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }'
+)
+
+content = content.replace(
+    'div[style*=\"grid-template-columns: 240px 1fr\"] { grid-template-columns: 1fr !important; }',
+    '.account-grid { grid-template-columns: 1fr !important; }'
+)
+
+with open(path, 'w') as f:
+    f.write(content)
+print('3/4 app.css — account-grid rules added')
+"
+
+# 4. Login page — fix icon/placeholder overlap with proper autocomplete attributes + spacing
+python3 -c "
+path = 'src/pages/Login.jsx'
+with open(path) as f:
+    content = f.read()
+
+content = content.replace(
+    '''                type=\"text\" placeholder=\"TCT/2024/0142\"''',
+    '''                type=\"text\" name=\"username\" autoComplete=\"username\" placeholder=\"TCT/2024/0142\"'''
+)
+content = content.replace(
+    '''                type={showPassword ? 'text' : 'password'} placeholder=\"••••••••\"''',
+    '''                type={showPassword ? 'text' : 'password'} name=\"password\" autoComplete=\"current-password\" placeholder=\"••••••••\"'''
+)
+
+with open(path, 'w') as f:
+    f.write(content)
+print('4/4 Login.jsx — autocomplete attributes added')
+"
+
+python3 -c "
+path = 'src/styles/login.css'
+with open(path) as f:
+    content = f.read()
+content = content.replace(
+    '.input-wrap input { width: 100%; padding: 11px 14px 11px 38px;',
+    '.input-wrap input { width: 100%; padding: 11px 14px 11px 42px;'
+)
+with open(path, 'w') as f:
+    f.write(content)
+print('   login.css — extra icon clearance added')
+"
+
+echo ""
+echo "All done. Verify with: grep account-grid src/styles/app.css"
