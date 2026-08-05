@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import Rings from '../components/Rings';
 import { useAuth } from '../context/AuthContext';
 import { fetchPackages } from '../api/packages';
+import { SkeletonLine, SkeletonPackageCard, SkeletonRow } from '../components/Skeleton';
 import { student, announcements } from '../data/mock';
 
 export default function Dashboard() {
@@ -45,7 +46,7 @@ export default function Dashboard() {
             <div>
               <h2 className="heading">Welcome back, {firstName}</h2>
               <p>
-                {loading ? 'Loading your packages…' : (
+                {loading ? <SkeletonLine width={220} height={13} /> : (
                   <>You're enrolled in {enrolled.length} package{enrolled.length !== 1 ? 's' : ''} and have
                   {' '}{upcoming.length} class{upcoming.length !== 1 ? 'es' : ''} coming up.</>
                 )}
@@ -66,7 +67,11 @@ export default function Dashboard() {
             </div>
 
             {loading ? (
-              <div className="empty-state"><div className="m">Loading…</div></div>
+              <div>
+                <SkeletonPackageCard />
+                <SkeletonPackageCard />
+                <SkeletonPackageCard />
+              </div>
             ) : enrolled.length === 0 ? (
               <div className="empty-state">
                 <i className="ti ti-apps-off"></i>
@@ -136,7 +141,10 @@ fn=(1+5**n-(!2n+45,)
             <a href="#/schedule" className="link-action">Full schedule</a>
           </div>
           {loading ? (
-            <div className="empty-state" style={{ padding: '20px 0' }}><div className="m">Loading…</div></div>
+            <div>
+              <SkeletonRow />
+              <SkeletonRow />
+            </div>
           ) : upcoming.length === 0 ? (
             <div className="empty-state" style={{ padding: '20px 0' }}>
               <div className="m">No upcoming classes scheduled.</div>

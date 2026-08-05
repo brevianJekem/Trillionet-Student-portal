@@ -14,6 +14,8 @@ function toClientShape(row) {
     instructor: row.instructor,
     totalLessons: row.total_lessons,
     color: row.color,
+    price: row.price,
+    description: row.description,
     enrolled: !!row.enrolled,
     completedLessons: row.completed_lessons ?? 0,
     nextClass: row.next_class ?? null,
@@ -34,6 +36,7 @@ router.post('/:id/enroll', requireAuth, async (req, res) => {
   try {
     const pkg = await findPackageById(req.params.id);
     if (!pkg) return res.status(404).json({ error: 'Package not found' });
+
     await enrollUserInPackage(req.user.sub, req.params.id);
     res.json({ ok: true });
   } catch (err) {

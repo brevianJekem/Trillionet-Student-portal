@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
+
 CREATE TABLE IF NOT EXISTS refresh_tokens (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -23,6 +25,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
+
 CREATE TABLE IF NOT EXISTS packages (
   id             TEXT PRIMARY KEY,
   name           TEXT NOT NULL,
@@ -32,6 +35,9 @@ CREATE TABLE IF NOT EXISTS packages (
   color          TEXT NOT NULL DEFAULT 'var(--blue)',
   created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS price INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS description TEXT;
 
 CREATE TABLE IF NOT EXISTS enrollments (
   id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,5 +51,3 @@ CREATE TABLE IF NOT EXISTS enrollments (
 
 CREATE INDEX IF NOT EXISTS idx_enrollments_user_id ON enrollments(user_id);
 CREATE INDEX IF NOT EXISTS idx_enrollments_package_id ON enrollments(package_id);
-
-ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;

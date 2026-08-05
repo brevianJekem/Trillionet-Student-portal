@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { fetchPackages, enrollInPackage, dropPackage } from '../api/packages';
 import { materials } from '../data/mock'; // course materials aren't wired to the database yet
+import { SkeletonPackageCard } from '../components/Skeleton';
 
 const typeIcon = { pdf: 'ti-file-type-pdf', video: 'ti-player-play' };
 
@@ -72,7 +73,11 @@ export default function Packages() {
       )}
 
       {loading ? (
-        <div className="panel"><div className="empty-state"><div className="m">Loading your packages…</div></div></div>
+        <div className="panel">
+          <SkeletonPackageCard />
+          <SkeletonPackageCard />
+          <SkeletonPackageCard />
+        </div>
       ) : tab === 'enrolled' ? (
         enrolledPackages.length === 0 ? (
           <div className="panel"><div className="empty-state">
