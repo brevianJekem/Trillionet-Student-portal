@@ -8,6 +8,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [regNo, setRegNo] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user) return <Navigate to="/" replace />;
@@ -15,7 +16,7 @@ export default function Login() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    const ok = await login(regNo, password);
+    const ok = await login(regNo, password, rememberMe);
     setSubmitting(false);
     if (ok) navigate('/');
   };
@@ -91,7 +92,10 @@ export default function Login() {
 
 
           <div className="field-row">
-            <label className="remember"><input type="checkbox" />Remember me</label>
+            <label className="remember">
+              <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />
+              Remember me
+            </label>
             <a href="#" className="forgot">Forgot password?</a>
           </div>
 

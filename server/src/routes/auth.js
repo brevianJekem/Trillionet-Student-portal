@@ -12,18 +12,16 @@ const router = Router();
 const REFRESH_COOKIE_NAME = 'trillionet_refresh';
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days — keep in sync with REFRESH_TOKEN_TTL in .env
 
-function refreshCookieOptions() {
+function refreshCookieOptions(rememberMe = true) {
   const isProd = process.env.NODE_ENV === 'production';
-  return {
+  const opts = {
     httpOnly: true,
-    // Frontend and backend live on different Render subdomains in production,
-    // which makes this a cross-site cookie — SameSite=None + Secure is required
-    // for the browser to send it at all. Locally (same-site) 'lax' is enough.
     sameSite: isProd ? 'none' : 'lax',
     secure: isProd,
     path: '/api/auth',
-    maxAge: REFRESH_TTL_MS,
   };
+  if (rememberMe) opts.maxAge = REFRESH_TTL_MS;
+  return opts;
 }
 
 function publicUser(user) {
@@ -33,7 +31,7 @@ function publicUser(user) {
 // POST /api/auth/login  { regNo, password }
 router.post('/login', async (req, res) => {
   try {
-    const { regNo, password } = req.body;
+    const { regNo, password, rememberMe } = req.body;
     if (!regNo || !password) {
       return res.status(400).json({ error: 'Registration number and password are required' });
     }
@@ -52,7 +50,7 @@ router.post('/login', async (req, res) => {
     const refreshToken = signRefreshToken(found);
     await storeRefreshToken(found.id, refreshToken, new Date(Date.now() + REFRESH_TTL_MS));
 
-    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions());
+    res.cookie(REFRESH_COOKIE_NAME, refreshToken, refreshCookieOptions(rememberMe !== false));
     res.json({ accessToken, user: publicUser(found) });
   } catch (err) {
     console.error('Login error:', err);

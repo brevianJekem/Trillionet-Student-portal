@@ -16,12 +16,12 @@ export function AuthProvider({ children }) {
     })();
   }, []);
 
-  const login = async (regNo, password) => {
+  const login = async (regNo, password, rememberMe = true) => {
     setError(null);
     try {
       const res = await apiFetch('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ regNo, password }),
+        body: JSON.stringify({ regNo, password, rememberMe }),
       }, false);
 
       const data = await res.json();
