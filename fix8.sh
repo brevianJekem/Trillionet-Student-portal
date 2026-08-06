@@ -1,3 +1,7 @@
+cd "$(dirname "$0")"
+
+# 1. Dashboard.jsx — full file, refined with contextual banner + smart quick actions
+cat > src/pages/Dashboard.jsx << 'JSXEOF'
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Rings from '../components/Rings';
@@ -214,3 +218,74 @@ export default function Dashboard() {
     </Layout>
   );
 }
+JSXEOF
+echo "1/2 Dashboard.jsx — refined"
+
+# 2. app.css — status banner + primary quick-action styling
+python3 -c "
+path = 'src/styles/app.css'
+with open(path) as f:
+    content = f.read()
+
+old = '''.progress-fill { height: 100%; border-radius: 4px; background: var(--navy); }
+
+.quick { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.quick-btn { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer; }
+.quick-btn i { font-size: 15px; color: var(--blue); }
+.quick-btn:hover { border-color: var(--blue-light); }
+
+/* ---------- Mobile ---------- */'''
+
+new = '''.progress-fill { height: 100%; border-radius: 4px; background: var(--navy); }
+
+/* ---------- Status banner (contextual, single most relevant thing) ---------- */
+.status-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; border-radius: 16px; margin-bottom: 16px;
+}
+.status-banner-alert { background: linear-gradient(135deg, var(--red-bg), var(--amber-bg)); border: 1px solid rgba(198, 67, 47, 0.18); }
+.status-banner-ok { background: var(--green-bg); border: 1px solid rgba(46, 158, 91, 0.18); }
+.status-banner-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; margin-bottom: 2px; }
+.status-banner-alert .status-banner-label, .status-banner-alert .status-banner-title { color: var(--red); }
+.status-banner-ok .status-banner-label, .status-banner-ok .status-banner-title { color: var(--green); }
+.status-banner-title { font-size: 16px; font-weight: 600; }
+.btn-status-cta {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--red); color: #fff; text-decoration: none;
+  padding: 11px 20px; border-radius: 11px; font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 4px 14px rgba(198, 67, 47, 0.25);
+  transition: transform 0.12s ease;
+}
+.btn-status-cta:hover { transform: translateY(-1px); }
+
+.quick { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.quick-btn { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer; min-height: 40px; }
+.quick-btn i { font-size: 15px; color: var(--blue); }
+.quick-btn:hover { border-color: var(--blue-light); }
+
+.quick-btn-primary {
+  background: var(--navy); color: #fff; border-color: var(--navy);
+  padding: 12px 20px; font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 4px 14px rgba(5, 38, 89, 0.22);
+}
+.quick-btn-primary i { color: var(--ice); }
+.quick-btn-primary:hover { border-color: var(--navy-deep); transform: translateY(-1px); }
+
+/* ---------- Mobile ---------- */'''
+
+content = content.replace(old, new)
+
+content = content.replace(
+    '''table.data-table { min-width: 480px; }''',
+    '''table.data-table { min-width: 480px; }
+  .status-banner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .btn-status-cta { width: 100%; justify-content: center; }'''
+)
+
+with open(path, 'w') as f:
+    f.write(content)
+print('2/2 app.css — status banner + primary action styling added')
+"
+
+echo ""
+echo "Done. Verify with: grep -c status-banner src/pages/Dashboard.jsx src/styles/app.css"
