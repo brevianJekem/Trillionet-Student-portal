@@ -15,3 +15,13 @@ export function requireAuth(req, res, next) {
     return res.status(401).json({ error: 'Invalid or expired access token' });
   }
 }
+
+export function requireRole(role) {
+  const allowed = Array.isArray(role) ? role : [role];
+  return (req, res, next) => {
+    if (!req.user || !allowed.includes(req.user.role)) {
+      return res.status(403).json({ error: 'You do not have permission to do that' });
+    }
+    next();
+  };
+}

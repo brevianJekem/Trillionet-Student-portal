@@ -14,6 +14,25 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS parent_phone TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id);
+
+CREATE TABLE IF NOT EXISTS admission_sequences (
+  year         INTEGER PRIMARY KEY,
+  last_number  INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS fee_payments (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount       INTEGER NOT NULL,
+  method       TEXT NOT NULL DEFAULT 'cash',
+  note         TEXT,
+  recorded_by  UUID REFERENCES users(id),
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_fee_payments_user_id ON fee_payments(user_id);
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-import { findUserByRegNo, createUser, updateUserPassword, revokeAllRefreshTokensForUser } from './db/queries.js';
+import { findUserByRegNo, findUserByEmail, createUser, updateUserPassword, revokeAllRefreshTokensForUser } from './db/queries.js';
 import { pool } from './db/pool.js';
 
 const demoUser = {
@@ -10,7 +10,15 @@ const demoUser = {
   role: 'student',
 };
 
+const staffUser = {
+  regNo: 'STAFF-0001',
+  email: 'admin@trillionet.ac.ke',
+  name: 'Admin',
+  role: 'staff',
+};
+
 const PLAINTEXT_PASSWORD = 'Trillionet2026!';
+const STAFF_PASSWORD = 'TrillionetStaff2026!';
 
 const catalog = [
   {
@@ -85,10 +93,28 @@ async function seedEnrollments(userId) {
   console.log(`Enrollments: ${demoEnrollments.length} ensured for demo user.`);
 }
 
+async function seedStaffUser() {
+  let user = await findUserByEmail(staffUser.email);
+  const passwordHash = await bcrypt.hash(STAFF_PASSWORD, 10);
+
+  if (!user) {
+    user = await createUser({ ...staffUser, passwordHash });
+    console.log('Seeded staff user:');
+  } else {
+    await updateUserPassword(user.id, passwordHash);
+    await revokeAllRefreshTokensForUser(user.id);
+    console.log('Staff user already existed — password rotated:');
+  }
+  console.log(`  Email    : ${staffUser.email}`);
+  console.log(`  Password : ${STAFF_PASSWORD}`);
+  return user;
+}
+
 async function seed() {
   await syncCatalog();
   const user = await seedDemoUser();
   await seedEnrollments(user.id);
+  await seedStaffUser();
   await pool.end();
 }
 
