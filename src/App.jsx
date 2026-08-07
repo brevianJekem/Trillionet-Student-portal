@@ -10,9 +10,19 @@ import Assignments from './pages/Assignments';
 import Messages from './pages/Messages';
 import Fees from './pages/Fees';
 import Account from './pages/Account';
+import StaffStudents from './pages/staff/StaffStudents';
+import StaffCreateStudent from './pages/staff/StaffCreateStudent';
 
 function Protected({ children }) {
   return <ProtectedRoute>{children}</ProtectedRoute>;
+}
+
+function StaffOnly({ children }) {
+  return <ProtectedRoute staffOnly>{children}</ProtectedRoute>;
+}
+
+function Shared({ children }) {
+  return <ProtectedRoute neutral>{children}</ProtectedRoute>;
 }
 
 export default function App() {
@@ -22,13 +32,18 @@ export default function App() {
         <HashRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+
             <Route path="/" element={<Protected><Dashboard /></Protected>} />
             <Route path="/packages" element={<Protected><Packages /></Protected>} />
             <Route path="/schedule" element={<Protected><Schedule /></Protected>} />
             <Route path="/assignments" element={<Protected><Assignments /></Protected>} />
             <Route path="/messages" element={<Protected><Messages /></Protected>} />
             <Route path="/fees" element={<Protected><Fees /></Protected>} />
-            <Route path="/account" element={<Protected><Account /></Protected>} />
+
+            <Route path="/staff/students" element={<StaffOnly><StaffStudents /></StaffOnly>} />
+            <Route path="/staff/students/new" element={<StaffOnly><StaffCreateStudent /></StaffOnly>} />
+
+            <Route path="/account" element={<Shared><Account /></Shared>} />
           </Routes>
         </HashRouter>
       </AuthProvider>
