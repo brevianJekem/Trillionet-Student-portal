@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import StaffLayout from '../../components/StaffLayout';
-import { fetchStudents } from '../../api/staff';
+import { fetchStudents, recordPaymentForStudent } from '../../api/staff';
+import { openReceipt } from '../../utils/receipt';
 import { SkeletonRow } from '../../components/Skeleton';
 
 export default function StaffStudents() {
@@ -9,17 +10,25 @@ export default function StaffStudents() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setStudents(await fetchStudents());
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const [payingFor, setPayingFor] = useState(null); // student id currently showing the payment form
+  const [payAmount, setPayAmount] = useState('');
+  const [payMethod, setPayMethod] = useState('cash');
+  const [payCode, setPayCode] = useState('');
+  const [paySubmitting, setPaySubmitting] = useState(false);
+  const [payError, setPayError] = useState(null);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      setStudents(await fetchStudents());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
 
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -30,6 +39,34 @@ export default function StaffStudents() {
         s.email.toLowerCase().includes(q)
       )
     : students;
+
+  const openPayForm = (studentId) => {
+    setPayingFor(studentId);
+    setPayAmount(''); setPayMethod('cash'); setPayCode(''); setPayError(null);
+  };
+
+  const handleRecordPayment = async (e, student) => {
+    e.preventDefault();
+    setPayError(null);
+    setPaySubmitting(true);
+    try {
+      await recordPaymentForStudent(student.id, {
+        amount: Number(payAmount), method: payMethod, transactionCode: payCode || undefined,
+      });
+      const amountPaid = Number(payAmount);
+      setPayingFor(null);
+      await load();
+      // Offer a receipt immediately, same as the student would get.
+      openReceipt({
+        studentName: student.name, regNo: student.regNo,
+        payment: { id: crypto.randomUUID(), amount: amountPaid, method: payMethod, transactionCode: payCode || null, date: new Date().toISOString() },
+      });
+    } catch (err) {
+      setPayError(err.message);
+    } finally {
+      setPaySubmitting(false);
+    }
+  };
 
   return (
     <StaffLayout title="Students">
@@ -75,18 +112,59 @@ export default function StaffStudents() {
           <div className="table-wrap">
             <table className="data-table">
               <thead>
-                <tr><th>Admission No.</th><th>Name</th><th>Phone</th><th>Parent phone</th><th>Fees paid</th><th>Packages</th></tr>
+                <tr><th>Admission No.</th><th>Name</th><th>Phone</th><th>Total fee</th><th>Paid</th><th>Balance</th><th></th></tr>
               </thead>
               <tbody>
                 {filtered.map(s => (
-                  <tr key={s.id}>
-                    <td className="mono">{s.regNo}</td>
-                    <td style={{ fontWeight: 500 }}>{s.name}</td>
-                    <td className="muted">{s.phone || '—'}</td>
-                    <td className="muted">{s.parentPhone || '—'}</td>
-                    <td>KSh {s.totalPaid.toLocaleString()}</td>
-                    <td className="muted">{s.packageCount}</td>
-                  </tr>
+                  <Fragment key={s.id}>
+                    <tr>
+                      <td className="mono">{s.regNo}</td>
+                      <td style={{ fontWeight: 500 }}>{s.name}</td>
+                      <td className="muted">{s.phone || '—'}</td>
+                      <td className="muted">KSh {s.totalFee.toLocaleString()}</td>
+                      <td className="muted">KSh {s.totalPaid.toLocaleString()}</td>
+                      <td style={{ fontWeight: 500, color: s.balance > 0 ? 'var(--red)' : 'var(--green)' }}>
+                        KSh {s.balance.toLocaleString()}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button className="btn btn-secondary btn-sm" onClick={() => openPayForm(s.id)}>
+                          <i className="ti ti-plus"></i>Payment
+                        </button>
+                      </td>
+                    </tr>
+                    {payingFor === s.id && (
+                      <tr>
+                        <td colSpan={7} style={{ background: 'var(--bg)' }}>
+                          <form onSubmit={(e) => handleRecordPayment(e, s)} style={{ display: 'flex', gap: 10, alignItems: 'flex-end', padding: '12px 4px', flexWrap: 'wrap' }}>
+                            {payError && <div style={{ width: '100%', color: 'var(--red)', fontSize: 12 }}>{payError}</div>}
+                            <div style={{ flex: '0 0 110px' }}>
+                              <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Amount (KSh)</label>
+                              <input type="number" min="1" required value={payAmount} onChange={e => setPayAmount(e.target.value)}
+                                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 9, fontSize: 13 }} />
+                            </div>
+                            <div style={{ flex: '0 0 130px' }}>
+                              <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Method</label>
+                              <select value={payMethod} onChange={e => setPayMethod(e.target.value)}
+                                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 9, fontSize: 13 }}>
+                                <option value="cash">Cash</option>
+                                <option value="mpesa">M-Pesa</option>
+                                <option value="bank">Bank</option>
+                              </select>
+                            </div>
+                            <div style={{ flex: '1 1 160px' }}>
+                              <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Transaction code (optional)</label>
+                              <input type="text" value={payCode} onChange={e => setPayCode(e.target.value.toUpperCase())}
+                                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 9, fontSize: 13 }} />
+                            </div>
+                            <button type="submit" className="btn btn-primary btn-sm" disabled={paySubmitting}>
+                              {paySubmitting ? 'Saving…' : 'Save & print receipt'}
+                            </button>
+                            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setPayingFor(null)}>Cancel</button>
+                          </form>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
