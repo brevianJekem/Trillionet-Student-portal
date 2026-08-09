@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import Rings from '../components/Rings';
 import { useAuth } from '../context/AuthContext';
 import { fetchPackages } from '../api/packages';
+import { fetchFeesSummary } from '../api/fees';
 import { SkeletonLine, SkeletonPackageCard, SkeletonRow } from '../components/Skeleton';
 import { student, announcements } from '../data/mock';
 
@@ -11,13 +12,16 @@ export default function Dashboard() {
   const firstName = (user?.name || student.name).split(' ')[0];
 
   const [packages, setPackages] = useState([]);
+  const [fees, setFees] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
-        setPackages(await fetchPackages());
+        const [pkgs, feesSummary] = await Promise.all([fetchPackages(), fetchFeesSummary()]);
+        setPackages(pkgs);
+        setFees(feesSummary);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -31,10 +35,11 @@ export default function Dashboard() {
     ? Math.round(enrolled.reduce((s, p) => s + p.completedLessons / p.totalLessons, 0) / enrolled.length * 100)
     : 0;
   const upcoming = enrolled.filter(p => p.nextClass).sort((a, b) => a.nextClass.localeCompare(b.nextClass));
+  const balance = fees?.balance ?? 0;
 
   const primaryAction = enrolled.length === 0
     ? { href: '#/packages', icon: 'ti-apps', label: 'Register a package' }
-    : student.feeBalance > 0
+    : balance > 0
       ? { href: '#/fees', icon: 'ti-credit-card', label: 'Pay fees' }
       : { href: '#/assignments', icon: 'ti-file-upload', label: 'Submit assignment' };
 
@@ -54,11 +59,11 @@ export default function Dashboard() {
       )}
 
       {!loading && (
-        student.feeBalance > 0 ? (
+        balance > 0 ? (
           <div className="status-banner status-banner-alert">
             <div>
               <div className="status-banner-label">Outstanding balance</div>
-              <div className="status-banner-title">KSh {student.feeBalance.toLocaleString()} due</div>
+              <div className="status-banner-title">KSh {balance.toLocaleString()} due</div>
             </div>
             <a href="#/fees" className="btn-status-cta">Pay now <i className="ti ti-arrow-right"></i></a>
           </div>
@@ -136,8 +141,8 @@ export default function Dashboard() {
           <div className="info-card tone-blue">
             <div className="ic-icon"><i className="ti ti-coin"></i></div>
             <div className="ic-label">Fee balance</div>
-            <div className="ic-value">KSh {student.feeBalance.toLocaleString()}</div>
-            <button className="btn-ghost-light">Pay now</button>
+            <div className="ic-value">{loading ? '…' : `KSh ${balance.toLocaleString()}`}</div>
+            <a href="#/fees" className="btn-ghost-light" style={{ textDecoration: 'none', display: 'inline-block' }}>Pay now</a>
           </div>
 
           <div className="info-card tone-navy">
