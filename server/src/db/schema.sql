@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS fee_payments (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+ALTER TABLE fee_payments ADD COLUMN IF NOT EXISTS transaction_code TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_fee_payments_user_id ON fee_payments(user_id);
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
