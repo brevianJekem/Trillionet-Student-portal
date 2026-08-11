@@ -16,3 +16,13 @@ export async function createStudentAccount(payload) {
   if (!res.ok) throw new Error(data.error || 'Could not create the student account');
   return data;
 }
+
+export async function recordPaymentForStudent(studentId, payload) {
+  const res = await apiFetch(`/staff/students/${studentId}/payments`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Could not record the payment');
+  return data;
+}
