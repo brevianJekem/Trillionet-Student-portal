@@ -14,7 +14,7 @@ export default function Dashboard() {
   const [packages, setPackages] = useState([]);
   const [fees, setFees] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     (async () => {
