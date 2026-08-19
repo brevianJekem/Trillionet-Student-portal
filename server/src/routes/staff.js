@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import { nextAdmissionNumber, createStudent, recordFeePayment, listStudents, getFeesSummaryForUser } from '../db/staff.js';
+import { listLaptopOrders, updateLaptopOrderStatus } from '../db/orders.js';
 import { enrollUserInPackage } from '../db/packages.js';
 
 const router = Router();
@@ -99,6 +100,38 @@ router.get('/students/:id/fees', async (req, res) => {
   } catch (err) {
     console.error('Staff fees detail error:', err);
     res.status(500).json({ error: 'Could not load fee details' });
+  }
+});
+
+router.get('/orders/laptops', async (req, res) => {
+  try {
+    const orders = await listLaptopOrders();
+    res.json({
+      orders: orders.map(o => ({
+        id: o.id, name: o.name, phone: o.phone, email: o.email || '',
+        budget: o.budget || '', useCase: o.use_case || '', message: o.message || '',
+        status: o.status, createdAt: o.created_at,
+      })),
+    });
+  } catch (err) {
+    console.error('List laptop orders error:', err);
+    res.status(500).json({ error: 'Could not load orders' });
+  }
+});
+
+router.patch('/orders/laptops/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowed = ['new', 'contacted', 'sold', 'cancelled'];
+    if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+
+    const order = await updateLaptopOrderStatus(req.params.id, status);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Update laptop order error:', err);
+    res.status(500).json({ error: 'Could not update the order' });
   }
 });
 
